@@ -20,15 +20,35 @@ def create_parser(subparser):
         "rnnn", description="Noise reduction using ffmpeg rnnn model"
     )
     # Add subprser arguments here.
-    parser.add_argument("-i", "--input_audio", type=str, required=True, help="Path to input audio file (e.g. mp3, wav)")
-    parser.add_argument("-o", "--output_wav", type=str, required=False, help="Path to output WAV file")
+    parser.add_argument(
+        "-i",
+        "--input_audio",
+        type=str,
+        required=True,
+        help="Path to input audio file (e.g. mp3, wav)",
+    )
+    parser.add_argument(
+        "-o", "--output_wav", type=str, default=None, help="Path to output WAV file"
+    )
 
     # Get available models for choices
     available_models = get_available_models()
-    model_help = f"RNNoise model to use. Available models: {', '.join(available_models) if available_models else 'none found'}"
+    model_help = f"RNNoise model to use. (default: %(default)s) Available models: {', '.join(available_models) if available_models else 'none found'}"
 
-    parser.add_argument("-m", "--model", type=str, required=True, choices=available_models, help=model_help)
-    parser.add_argument("--mix", type=float, default=0.6, help="Wet/dry mix ratio (0.0 = original, 1.0 = fully denoised)")
+    parser.add_argument(
+        "-m",
+        "--model",
+        type=str,
+        default="mp",
+        choices=available_models,
+        help=model_help,
+    )
+    parser.add_argument(
+        "--mix",
+        type=float,
+        default=0.6,
+        help="Wet/dry mix ratio (0.0 = original, 1.0 = fully denoised) (default: %(default)s)",
+    )
     return parser
 
 
@@ -86,9 +106,8 @@ class ViztoolzPlugin:
         self.parser.set_defaults(func=self.run)
 
     def run(self, args):
-
-        output = determine_output_path(args.input_audio,args.output_wav, "denoise.mp3")
-
+        output = determine_output_path(args.input_audio, args.output_wav, "denoise")
+        output = f"{output}.wav"
         # Construct the full model path from the chosen model name
         models_dir = Path(__file__).parent / "models"
         model_path = models_dir / f"{args.model}.rnnn"
@@ -98,7 +117,7 @@ class ViztoolzPlugin:
             input_audio=args.input_audio,
             output_wav=output,
             model_path=str(model_path),
-            mix=args.mix
+            mix=args.mix,
         )
 
     def hello(self, args):
