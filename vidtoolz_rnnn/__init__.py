@@ -107,7 +107,8 @@ class ViztoolzPlugin:
 
     def run(self, args):
         output = determine_output_path(args.input_audio, args.output_wav, "denoise")
-        output = f"{output}.wav"
+        if not output.endswith(".wav"):
+            output = f"{output}.wav"
         # Construct the full model path from the chosen model name
         models_dir = Path(__file__).parent / "models"
         model_path = models_dir / f"{args.model}.rnnn"
