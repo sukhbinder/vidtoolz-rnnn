@@ -46,7 +46,7 @@ def create_parser(subparser):
     parser.add_argument(
         "--mix",
         type=float,
-        default=0.6,
+        default=0.9,
         help="Wet/dry mix ratio (0.0 = original, 1.0 = fully denoised) (default: %(default)s)",
     )
     return parser
@@ -60,13 +60,19 @@ def denoise_audio(
 
     :param input_audio: Path to input audio file (e.g. mp3, wav)
     :param output_wav: Path to output WAV file
-    :param model_path: Path to RNNoise .rnnn model file
+    :param model_path: Path to RNNoise .rnnn model file or model name
     :param mix: Wet/dry mix ratio (0.0 = original, 1.0 = fully denoised)
     """
 
     input_audio = Path(input_audio)
     output_wav = Path(output_wav)
-    model_path = Path(model_path)
+
+    if model_path.endswith(".rnnn"):
+        model_path = Path(model_path)
+    else:
+        # Construct the full model path from the chosen model name
+        models_dir = Path(__file__).parent / "models"
+        model_path = models_dir / f"{model_path}.rnnn"
 
     if not input_audio.exists():
         raise FileNotFoundError(f"Input audio not found: {input_audio}")

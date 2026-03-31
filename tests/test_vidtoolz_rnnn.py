@@ -83,7 +83,7 @@ def test_create_parser_default_mix():
     parser = w.create_parser(subparser)
 
     result = parser.parse_args(["-i", "input.mp3", "-o", "output.wav", "-m", "lq"])
-    assert result.mix == 0.6  # Default value
+    assert result.mix == 0.9
 
 
 def test_create_parser_required_arguments():
