@@ -91,7 +91,7 @@ def denoise_audio(
         "-filter:a",
         f"arnndn=model={model_path}:mix={mix}",
         "-codec:a",
-        "pcm_s24le",
+        "pcm_s16le",
         str(output_wav),
     ]
 
